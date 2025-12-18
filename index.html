@@ -1,402 +1,314 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NAM NAM STATIONERY</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TPQ Al-Barokah</title>
 
-  <!-- Google Font 2025 -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#00e5ff;
+  --glass:rgba(255,255,255,.12);
+  --dark:#06141b;
+}
 
-  <!-- Icons -->
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+*{box-sizing:border-box;font-family:Inter,Arial}
+body{margin:0;background:linear-gradient(180deg,#06141b,#0b2b33);color:#fff}
 
-  <style>
-    :root {
-      --primary: #6366f1;
-      --secondary: #22c55e;
-      --dark: #0f172a;
-      --light: #f8fafc;
-      --glass: rgba(255,255,255,0.75);
-    }
+/* HEADER */
+header{
+  position:sticky;
+  top:0;
+  background:rgba(0,0,0,.5);
+  backdrop-filter:blur(10px);
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:20;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:36px;height:36px;border-radius:50%}
+.brand h3{margin:0;font-size:16px}
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.actions a{
+  padding:6px 12px;
+  background:var(--primary);
+  color:#000;
+  border-radius:20px;
+  font-size:12px;
+  text-decoration:none;
+  font-weight:600;
+}
+.hamburger{
+  font-size:22px;
+  cursor:pointer;
+}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
+/* DRAWER MENU */
+.drawer{
+  position:fixed;
+  top:0;
+  left:-260px;
+  width:260px;
+  height:100%;
+  background:#020c11;
+  padding:20px;
+  transition:.3s;
+  z-index:30;
+}
+.drawer.active{left:0}
+.drawer h4{margin-top:0}
+.drawer .item{
+  padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  cursor:pointer;
+}
+.drawer .item span{
+  margin-left:10px;
+}
 
-    body {
-      background: linear-gradient(180deg, #eef2ff, #ffffff);
-      color: var(--dark);
-    }
+/* OVERLAY */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  z-index:25;
+}
+.overlay.active{display:block}
 
-    /* ===== NAVBAR ===== */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-      background: var(--glass);
-      border-bottom: 1px solid #e5e7eb;
-    }
+/* SLIDER */
+.slider img{
+  width:100%;
+  height:240px;
+  object-fit:cover;
+  border-radius:0 0 24px 24px;
+}
 
-    .nav {
-      max-width: 1200px;
-      margin: auto;
-      padding: 18px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+/* MENU CARD */
+.menu{
+  padding:16px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+.card{
+  background:var(--glass);
+  backdrop-filter:blur(10px);
+  border-radius:18px;
+  padding:16px;
+  cursor:pointer;
+}
+.card h4{margin:6px 0 4px;font-size:14px}
+.card p{margin:0;font-size:12px;color:#ddd}
 
-    .logo {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
+/* CONTENT */
+.content{padding:16px}
+.section{display:none}
+.section.active{display:block}
+.box{
+  background:var(--glass);
+  border-radius:20px;
+  padding:22px;
+}
 
-    .nav ul {
-      list-style: none;
-      display: flex;
-      gap: 28px;
-    }
+/* PENGELOLA */
+.profile{
+  display:flex;
+  gap:14px;
+  margin-bottom:14px;
+}
+.profile img{
+  width:70px;
+  height:70px;
+  border-radius:16px;
+  object-fit:cover;
+}
 
-    .nav a {
-      text-decoration: none;
-      font-weight: 500;
-      color: #334155;
-    }
-
-    .nav .btn {
-      background: var(--primary);
-      color: #fff;
-      padding: 10px 18px;
-      border-radius: 999px;
-      font-size: 0.9rem;
-    }
-
-    /* ===== HERO ===== */
-    .hero {
-      max-width: 1200px;
-      margin: auto;
-      padding: 100px 24px 80px;
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 50px;
-      align-items: center;
-    }
-
-    .hero h1 {
-      font-size: 3.4rem;
-      line-height: 1.1;
-      margin-bottom: 20px;
-    }
-
-    .hero h1 span {
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero p {
-      font-size: 1.05rem;
-      color: #475569;
-      margin-bottom: 32px;
-    }
-
-    .hero .cta {
-      display: flex;
-      gap: 16px;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #fff;
-      padding: 14px 26px;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 600;
-      box-shadow: 0 10px 30px rgba(99,102,241,0.35);
-    }
-
-    .btn-outline {
-      border: 1.5px solid var(--primary);
-      color: var(--primary);
-      padding: 14px 26px;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .hero-card {
-      background: rgba(255,255,255,0.9);
-      border-radius: 28px;
-      padding: 30px;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.08);
-    }
-
-    .hero-card img {
-      width: 100%;
-      border-radius: 20px;
-    }
-
-    /* ===== FEATURES ===== */
-    .features {
-      max-width: 1200px;
-      margin: auto;
-      padding: 80px 24px;
-      text-align: center;
-    }
-
-    .features h2 {
-      font-size: 2.4rem;
-      margin-bottom: 14px;
-    }
-
-    .features p {
-      color: #64748b;
-      margin-bottom: 60px;
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 28px;
-    }
-
-    .feature-card {
-      background: #fff;
-      padding: 36px 28px;
-      border-radius: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-      text-align: left;
-      transition: 0.3s;
-    }
-
-    .feature-card:hover {
-      transform: translateY(-6px);
-    }
-
-    .feature-card i {
-      font-size: 2.4rem;
-      color: var(--primary);
-      margin-bottom: 18px;
-    }
-
-    .feature-card h3 {
-      margin-bottom: 10px;
-    }
-
-    /* ===== PRODUCTS ===== */
-    .products {
-      background: #f1f5f9;
-      padding: 80px 24px;
-    }
-
-    .products .container {
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    .products h2 {
-      text-align: center;
-      font-size: 2.4rem;
-      margin-bottom: 50px;
-    }
-
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 28px;
-    }
-
-    .product-card {
-      background: #fff;
-      border-radius: 24px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-
-    .product-card img {
-      width: 100%;
-      border-radius: 18px;
-      margin-bottom: 16px;
-    }
-
-    .product-card h4 {
-      margin-bottom: 6px;
-    }
-
-    .price {
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 12px;
-    }
-
-    .product-card button {
-      width: 100%;
-      padding: 12px;
-      border-radius: 999px;
-      border: none;
-      background: var(--secondary);
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    /* ===== FOOTER ===== */
-    footer {
-      background: #020617;
-      color: #cbd5f5;
-      padding: 60px 24px;
-    }
-
-    footer .container {
-      max-width: 1200px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 40px;
-    }
-
-    footer h3 {
-      margin-bottom: 14px;
-      color: #fff;
-    }
-
-    footer a {
-      display: block;
-      text-decoration: none;
-      color: #cbd5f5;
-      margin-bottom: 8px;
-      font-size: 0.9rem;
-    }
-
-    footer .copyright {
-      text-align: center;
-      margin-top: 40px;
-      font-size: 0.85rem;
-      color: #94a3b8;
-    }
-
-    @media(max-width: 900px) {
-      .hero {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-      .hero .cta {
-        justify-content: center;
-      }
-    }
-  </style>
+/* FOOTER */
+footer{
+  background:#020c11;
+  padding:22px 16px;
+}
+iframe{
+  width:100%;
+  height:180px;
+  border:0;
+  border-radius:16px;
+}
+.social a{
+  display:inline-block;
+  margin:6px 6px 0 0;
+  padding:8px 14px;
+  background:var(--glass);
+  border-radius:12px;
+  font-size:12px;
+  color:#fff;
+  text-decoration:none;
+}
+.copy{
+  text-align:center;
+  margin-top:14px;
+  font-size:12px;
+  color:#777;
+}
+</style>
 </head>
+
 <body>
 
-  <!-- NAVBAR -->
-  <header>
-    <div class="nav">
-      <div class="logo">NAM-NAM STATIONERY</div>
-      <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Produk</a></li>
-        <li><a href="#">Promo</a></li>
-        <li><a href="#">Kontak</a></li>
-      </ul>
-      <a href="#" class="btn">Masuk</a>
-    </div>
-  </header>
+<!-- DRAWER -->
+<div class="drawer" id="drawer">
+  <h4>Menu</h4>
+  <div class="item" onclick="nav('profil')">🏫<span>Profil TPQ</span></div>
+  <div class="item" onclick="nav('pengelola')">👳<span>Pengelola</span></div>
+  <div class="item" onclick="nav('visi')">📌<span>Visi & Misi</span></div>
+  <div class="item" onclick="nav('kontak')">☎️<span>Kontak</span></div>
+</div>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div>
-      <h1>Toko Online <span>Modern & Cepat</span><br>Untuk Era 2025</h1>
-      <p>Belanja produk berkualitas dengan pengalaman premium, checkout cepat, dan desain futuristik.</p>
-      <div class="cta">
-        <a href="#" class="btn-primary">Belanja Sekarang</a>
-        <a href="#" class="btn-outline">Lihat Katalog</a>
-      </div>
-    </div>
-    <div class="hero-card">
-      <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30" alt="Produk">
-    </div>
-  </section>
+<div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
 
-  <!-- FEATURES -->
-  <section class="features">
-    <h2>Kenapa Pilih Kami?</h2>
-    <p>Teknologi dan layanan terbaik untuk pengalaman belanja modern</p>
-    <div class="feature-grid">
-      <div class="feature-card">
-        <i class='bx bx-bolt-circle'></i>
-        <h3>Checkout Instan</h3>
-        <p>Proses pembelian super cepat tanpa ribet.</p>
-      </div>
-      <div class="feature-card">
-        <i class='bx bx-shield-quarter'></i>
-        <h3>Pembayaran Aman</h3>
-        <p>Didukung sistem keamanan dan enkripsi terbaru.</p>
-      </div>
-      <div class="feature-card">
-        <i class='bx bx-package'></i>
-        <h3>Pengiriman Cepat</h3>
-        <p>Kurir terpercaya dengan pelacakan real-time.</p>
-      </div>
-    </div>
-  </section>
+<!-- HEADER -->
+<header>
+  <div class="brand">
+    <img src="logo.png">
+    <h3>TPQ Al-Barokah</h3>
+  </div>
 
-  <!-- PRODUCTS -->
-  <section class="products">
-    <div class="container">
-      <h2>Produk Unggulan</h2>
-      <div class="product-grid">
-        <div class="product-card">
-          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff">
-          <h4>Produk Premium</h4>
-          <div class="price">Rp 299.000</div>
-          <button>Beli Sekarang</button>
-        </div>
-        <div class="product-card">
-          <img src="https://images.unsplash.com/photo-1503602642458-232111445657">
-          <h4>Produk Favorit</h4>
-          <div class="price">Rp 199.000</div>
-          <button>Beli Sekarang</button>
-        </div>
-        <div class="product-card">
-          <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f">
-          <h4>Produk Terlaris</h4>
-          <div class="price">Rp 399.000</div>
-          <button>Beli Sekarang</button>
-        </div>
-      </div>
+  <div class="header-right">
+    <div class="actions">
+      <a href="#">Register</a>
+      <a href="#">Masuk</a>
     </div>
-  </section>
+    <div class="hamburger" onclick="toggleDrawer()">☰</div>
+  </div>
+</header>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="container">
+<!-- SLIDER -->
+<div class="slider">
+  <img id="slide" src="https://picsum.photos/600/400?1">
+</div>
+
+<!-- MENU CARD -->
+<div class="menu">
+  <div class="card" onclick="show('profil')">
+    <h4>🏫 Profil TPQ</h4>
+    <p>Gambaran singkat TPQ</p>
+  </div>
+  <div class="card" onclick="show('pengelola')">
+    <h4>👳 Pengelola</h4>
+    <p>Asatidz & pengurus</p>
+  </div>
+  <div class="card" onclick="show('visi')">
+    <h4>📌 Visi & Misi</h4>
+    <p>Arah dan tujuan</p>
+  </div>
+  <div class="card" onclick="show('kontak')">
+    <h4>☎️ Kontak</h4>
+    <p>Info & lokasi</p>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<div id="profil" class="section active">
+  <div class="box">
+    <h3>Profil TPQ</h3>
+    <p>
+      TPQ Al-Barokah adalah lembaga pendidikan Al-Qur’an
+      yang fokus pada pembinaan akhlak dan baca tulis Qur’an.
+    </p>
+  </div>
+</div>
+
+<div id="pengelola" class="section">
+  <div class="box">
+    <h3>Pengelola</h3>
+    <div class="profile">
+      <img src="https://i.pravatar.cc/150?1">
       <div>
-        <h3>Shop2025</h3>
-        <p>Toko online modern dengan desain masa depan.</p>
-      </div>
-      <div>
-        <h3>Menu</h3>
-        <a href="#">Home</a>
-        <a href="#">Produk</a>
-        <a href="#">Tentang</a>
-      </div>
-      <div>
-        <h3>Bantuan</h3>
-        <a href="#">FAQ</a>
-        <a href="#">Kontak</a>
-        <a href="#">Kebijakan</a>
+        <b>Ust. Ahmad</b><br>
+        Kepala TPQ<br>
+        📞 08xxxxxxxx
       </div>
     </div>
-    <div class="copyright">© 2025 Shop2025. All rights reserved.</div>
-  </footer>
+    <div class="profile">
+      <img src="https://i.pravatar.cc/150?2">
+      <div>
+        <b>Ustadzah Aisyah</b><br>
+        Asatidzah<br>
+        📞 08xxxxxxxx
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="visi" class="section">
+  <div class="box">
+    <h3>Visi & Misi</h3>
+    <p><b>Visi:</b> Mewujudkan generasi Qurani.</p>
+    <p><b>Misi:</b> Pendidikan Al-Qur’an & akhlak.</p>
+  </div>
+</div>
+
+<div id="kontak" class="section">
+  <div class="box">
+    <h3>Kontak</h3>
+    <p>
+      📍 Jl. Contoh Alamat TPQ<br>
+      📞 08xxxxxxxx<br>
+      ✉️ tpq@email.com
+    </p>
+  </div>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <iframe src="https://www.google.com/maps?q=jakarta&output=embed"></iframe>
+
+  <div class="social">
+    <a href="#">Instagram</a>
+    <a href="#">Facebook</a>
+    <a href="#">WhatsApp</a>
+  </div>
+
+  <div class="copy">
+    © 2025 TPQ Al-Barokah
+  </div>
+</footer>
+
+<script>
+let i=1;
+setInterval(()=>{
+  i++;
+  slide.src=`https://picsum.photos/600/400?${i}`;
+},3500);
+
+function show(id){
+  document.querySelectorAll('.section')
+    .forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:260,behavior:'smooth'});
+}
+
+function toggleDrawer(){
+  drawer.classList.toggle('active');
+  overlay.classList.toggle('active');
+}
+
+function nav(id){
+  toggleDrawer();
+  show(id);
+}
+</script>
 
 </body>
 </html>
-
-
