@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Asatidz</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f1f5f9;
+    }
+
+    header {
+      background: #0b5ed7;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hamburger {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 250px;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: -5px 0 20px rgba(0,0,0,.2);
+  padding: 20px;
+  transform: translateX(100%); /* 🔴 SEMBUNYI TOTAL */
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.menu.active {
+  transform: translateX(0); /* 🔥 MUNCUL */
+}
+
+    .menu a {
+      display: block;
+      margin-bottom: 15px;
+      text-decoration: none;
+      color: #0b5ed7;
+      font-weight: 500;
+    }
+
+    #overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.3);
+  display: none;
+  z-index: 998;
+}
+
+.menu.active ~ #overlay {
+  display: block;
+}
+
+    main {
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h3>Dashboard Asatidz</h3>
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+</header>
+
+<div class="menu" id="menu">
+  <a href="#">Tambah Asatidz</a>
+  <a href="#">Tambah Santri</a>
+  <a href="#">Absensi</a>
+  <a href="#">Nilai & Hafalan</a>
+  <a href="#">Bisyaroh</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div id="overlay" onclick="toggleMenu()"></div>
+
+<main>
+  <section id="asatidz-section">
+    <h4>Tambah Asatidz</h4>
+  
+    <form id="asatidzForm">
+      <input type="text" id="nama" placeholder="Nama" required>
+      <input type="text" id="nik" placeholder="NIK" required>
+      <input type="text" id="tempat" placeholder="Tempat Lahir" required>
+      <input type="date" id="tanggal" required>
+      <input type="text" id="pendidikan" placeholder="Pendidikan" required>
+      <textarea id="alamat" placeholder="Alamat" required></textarea>
+      <input type="file" id="foto" accept="image/*" required>
+  
+      <button type="submit">Simpan</button>
+    </form>
+  
+    <hr>
+  
+    <input type="text" id="search" placeholder="Cari nama...">
+    <button onclick="exportCSV()">Export CSV</button>
+  
+    <table width="100%" border="1" style="margin-top:10px;font-size:13px">
+      <thead>
+        <tr>
+          <th>Foto</th>
+          <th>Nama</th>
+          <th>NIK</th>
+          <th>Pendidikan</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="asatidzTable"></tbody>
+    </table>
+  </section>
+
+
+  
+</main>
+
+<!-- 🔥 SCRIPT FIREBASE -->
+<script type="module">
+  import { auth, db } from "./firebase.js";
+  import { onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { doc, getDoc }
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // MENU
+  window.toggleMenu = () => {
+    document.getElementById("menu").classList.toggle("active");
+  };
+
+  // LOGOUT
+  window.logout = async () => {
+    await signOut(auth);
+    window.location.href = "login.html";
+  };
+
+  // AUTH CHECK
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const snap = await getDoc(doc(db, "users", user.uid));
+
+    if (!snap.exists()) {
+      alert("Data user tidak ditemukan");
+      await signOut(auth);
+      window.location.href = "login.html";
+      return;
+    }
+
+    const data = snap.data();
+
+    if (data.role !== "asatidz") {
+      alert("Akses ditolak");
+      await signOut(auth);
+      window.location.href = "login.html";
+      return;
+    }
+
+    document.getElementById("welcome").innerText =
+      `Selamat datang, ${data.nama}`;
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<!-- LOAD TEMPLATE -->
+<script>
+fetch('template.html')
+.then(res => res.text())
+.then(html => {
+  document.body.innerHTML = html;
+
+  // ISI HALAMAN SANTRI
+  document.getElementById('content').innerHTML = `
+    <div class="card">
+      <h3>Form Tambah Santri</h3>
+
+      <input id="nama" placeholder="Nama Santri">
+      <input id="kelas" placeholder="Kelas">
+      <button onclick="simpan()">Simpan</button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Kelas</th>
+          </tr>
+        </thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+  `;
+
+  setActive('santri','Tambah Santri');
+});
+</script>
+
+<!-- FIREBASE -->
+<script type="module">
+import { db } from '../firebase.js';
+import {
+  collection, addDoc, getDocs
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+window.simpan = async () => {
+  if(!nama.value || !kelas.value) return alert('Lengkapi data');
+
+  await addDoc(collection(db,'santri'),{
+    nama: nama.value,
+    kelas: kelas.value
+  });
+
+  nama.value='';
+  kelas.value='';
+  load();
+}
+
+async function load(){
+  const snap = await getDocs(collection(db,'santri'));
+  tb.innerHTML='';
+  snap.forEach(d=>{
+    tb.innerHTML+=`
+      <tr>
+        <td>${d.data().nama}</td>
+        <td>${d.data().kelas}</td>
+      </tr>
+    `;
+  });
+}
+
+load();
+</script>
+
+</body>
+</html>
