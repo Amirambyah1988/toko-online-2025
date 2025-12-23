@@ -14,6 +14,11 @@
       background: #f1f5f9;
     }
 
+    .page{
+  display:none;
+}
+
+
     header {
       background: #0b5ed7;
       color: white;
@@ -69,6 +74,71 @@
     main {
       padding: 20px;
     }
+
+    .card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  margin-bottom: 20px;
+}
+
+input, textarea, button {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  font-family: inherit;
+  margin-bottom: 12px;
+}
+
+button {
+  background: #0b5ed7;
+  color: white;
+  border: none;
+  font-weight: 500;
+}
+
+button.secondary {
+  background: #64748b;
+}
+
+button.danger {
+  background: #dc2626;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+th {
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+.action-btn {
+  display: flex;
+  gap: 6px;
+}
+
+.action-btn button {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
   </style>
 </head>
 <body>
@@ -79,9 +149,9 @@
 </header>
 
 <div class="menu" id="menu">
-  <a href="#">Tambah Asatidz</a>
-  <a href="#">Tambah Santri</a>
-  <a href="#">Absensi</a>
+  <a href="#" onclick="showPage('asatidz')">Tambah Asatidz</a>
+  <a href="#" onclick="showPage('santri')">Tambah Santri</a>
+  <a href="#" onclick="showPage('absensi')">Absensi</a>
   <a href="#">Nilai & Hafalan</a>
   <a href="#">Bisyaroh</a>
   <a href="#" onclick="logout()">Logout</a>
@@ -90,92 +160,483 @@
 <div id="overlay" onclick="toggleMenu()"></div>
 
 <main>
-  <section id="asatidz-section">
+  <section id="asatidz-section" class="page">
     <h4>Tambah Asatidz</h4>
   
-    <form id="asatidzForm">
-      <input type="text" id="nama" placeholder="Nama" required>
-      <input type="text" id="nik" placeholder="NIK" required>
-      <input type="text" id="tempat" placeholder="Tempat Lahir" required>
-      <input type="date" id="tanggal" required>
-      <input type="text" id="pendidikan" placeholder="Pendidikan" required>
-      <textarea id="alamat" placeholder="Alamat" required></textarea>
-      <input type="file" id="foto" accept="image/*" required>
-  
-      <button type="submit">Simpan</button>
-    </form>
+    <div class="card">
+      <h4>Tambah Asatidz</h4>
+    
+      <form id="asatidzForm">
+        <input id="nama" placeholder="Nama" required>
+        <input id="nik" placeholder="NIK" required>
+        <input id="tempat" placeholder="Tempat Lahir" required>
+        <input type="date" id="tanggal" required>
+        <input id="pendidikan" placeholder="Pendidikan" required>
+        <textarea id="alamat" placeholder="Alamat" required></textarea>
+        <input type="file" id="foto" accept="image/*" required>
+        <button>Simpan</button>
+      </form>
+    </div>
   
     <hr>
   
     <input type="text" id="search" placeholder="Cari nama...">
     <button onclick="exportCSV()">Export CSV</button>
   
-    <table width="100%" border="1" style="margin-top:10px;font-size:13px">
-      <thead>
-        <tr>
-          <th>Foto</th>
-          <th>Nama</th>
-          <th>NIK</th>
-          <th>Pendidikan</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="asatidzTable"></tbody>
-    </table>
+    <div class="card">
+      <h4>Data Asatidz</h4>
+    
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Nama</th>
+              <th>NIK</th>
+              <th>Pendidikan</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="asatidzTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    
+  </section>
+
+  <section id="santri-section" class="page">
+    <div class="card">
+      <h4>Tambah Santri</h4>
+  
+      <form id="santriForm">
+        <input id="sNik" placeholder="NIK" required>
+        <input id="sNama" placeholder="Nama Santri" required>
+        <input id="sTempat" placeholder="Tempat Lahir" required>
+        <input type="date" id="sTanggal" required>
+        <input id="sUmur" type="number" placeholder="Umur" required>
+  
+        <select id="sGender" required>
+          <option value="">Jenis Kelamin</option>
+          <option value="Laki-laki">Laki-laki</option>
+          <option value="Perempuan">Perempuan</option>
+        </select>
+  
+        <textarea id="sAlamat" placeholder="Alamat" required></textarea>
+        <input id="sHp" placeholder="No HP" required>
+        <input id="sAyah" placeholder="Nama Ayah" required>
+        <input id="sIbu" placeholder="Nama Ibu" required>
+        <input type="file" id="sFoto" accept="image/*" required>
+  
+        <button>Simpan</button>
+      </form>
+    </div>
+  
+    <div class="card">
+      <h4>Data Santri</h4>
+  
+      <input type="text" id="searchSantri" placeholder="Cari santri...">
+  
+      <button onclick="sortSantriAZ()">A → Z</button>
+      <button onclick="exportSantriCSV()">Export CSV</button>
+  
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Nama</th>
+              <th>NIK</th>
+              <th>JK</th>
+              <th>Umur</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="santriTable"></tbody>
+        </table>
+      </div>
+    </div>
+  
   </section>
 
 
-  
 </main>
+
+<div id="modal" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  z-index:3000;
+">
+  <div class="card" style="max-width:400px;margin:60px auto">
+    <h4 id="modalTitle"></h4>
+    <div id="modalBody"></div>
+    <button class="secondary" onclick="closeModal()">Tutup</button>
+  </div>
+</div>
 
 <!-- 🔥 SCRIPT FIREBASE -->
 <script type="module">
-  import { auth, db } from "./firebase.js";
-  import { onAuthStateChanged, signOut }
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { doc, getDoc }
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { db } from "./firebase.js";
+  import {
+    collection, addDoc, getDocs,
+    deleteDoc, doc, updateDoc, query, orderBy
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  
+  const table = document.getElementById("asatidzTable");
+  const modal = document.getElementById("modal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalBody = document.getElementById("modalBody");
+  let dataAsatidz = [];
 
-  // MENU
-  window.toggleMenu = () => {
-    document.getElementById("menu").classList.toggle("active");
-  };
+  const santriForm = document.getElementById("santriForm");
+  const santriTable = document.getElementById("santriTable");
+  const searchSantri = document.getElementById("searchSantri");
+  let dataSantri = [];
+  
+  
+//HALAMAN BIAR TIDAK KOSONG
 
-  // LOGOUT
-  window.logout = async () => {
-    await signOut(auth);
-    window.location.href = "login.html";
-  };
 
-  // AUTH CHECK
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
 
-    const snap = await getDoc(doc(db, "users", user.uid));
-
-    if (!snap.exists()) {
-      alert("Data user tidak ditemukan");
-      await signOut(auth);
-      window.location.href = "login.html";
-      return;
-    }
-
-    const data = snap.data();
-
-    if (data.role !== "asatidz") {
-      alert("Akses ditolak");
-      await signOut(auth);
-      window.location.href = "login.html";
-      return;
-    }
-
-    document.getElementById("welcome").innerText =
-      `Selamat datang, ${data.nama}`;
+  // BASE64asatids
+  function toBase64(file) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        const c = document.createElement("canvas");
+        c.width = 300; c.height = 300;
+        c.getContext("2d").drawImage(img,0,0,300,300);
+        resolve(c.toDataURL("image/jpeg",0.6));
+      };
+    });
+  }
+  
+  // BASE64santri
+  function toBase64Santri(file) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    img.onload = () => {
+      const c = document.createElement("canvas");
+      c.width = 300; c.height = 300;
+      c.getContext("2d").drawImage(img,0,0,300,300);
+      resolve(c.toDataURL("image/jpeg",0.6));
+    };
   });
+}
+
+  // CREATE ASATIDZ
+  const asatidzForm = document.getElementById("asatidzForm");
+  
+  asatidzForm.onsubmit = async e => {
+    e.preventDefault();
+    const foto64 = await toBase64(foto.files[0]);
+  
+    await addDoc(collection(db,"asatidz"),{
+      nama:nama.value,
+      nik:nik.value,
+      tempatLahir:tempat.value,
+      tanggalLahir:tanggal.value,
+      pendidikan:pendidikan.value,
+      alamat:alamat.value,
+      foto:foto64,
+      createdAt:new Date()
+    });
+  
+    asatidzForm.reset();
+    load();
+  };
+  
+  //CREATE SANTRI
+  santriForm.addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const foto64 = await toBase64Santri(sFoto.files[0]);
+
+  await addDoc(collection(db,"santri"),{
+    nik: sNik.value,
+    nama: sNama.value,
+    tempatLahir: sTempat.value,
+    tanggalLahir: sTanggal.value,
+    umur: sUmur.value,
+    gender: sGender.value,
+    alamat: sAlamat.value,
+    hp: sHp.value,
+    ayah: sAyah.value,
+    ibu: sIbu.value,
+    foto: foto64,
+    createdAt: new Date()
+  });
+
+  santriForm.reset();
+  loadSantri();
+});
+
+//RENDER ASATIDZ
+function renderAsatidz(data){
+  table.innerHTML = "";
+  data.forEach(a=>{
+    table.innerHTML += `
+      <tr>
+        <td><img src="${a.foto}" width="36" style="border-radius:50%"></td>
+        <td>${a.nama}</td>
+        <td>${a.nik}</td>
+        <td>${a.pendidikan}</td>
+        <td class="action-btn">
+          <button onclick="detail('${a.id}')">Detail</button>
+          <button class="secondary" onclick="edit('${a.id}')">Edit</button>
+          <button class="danger" onclick="hapus('${a.id}')">Hapus</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+
+  // READ ASATIDZ
+  window.load = async function(){
+  dataAsatidz = [];
+  table.innerHTML = "";
+
+  const snap = await getDocs(collection(db,"asatidz"));
+  snap.forEach(d=>{
+    dataAsatidz.push({ id:d.id, ...d.data() });
+  });
+
+  renderAsatidz(dataAsatidz);
+}
+ 
+//RENDER SANTRI
+function renderSantri(data){
+  santriTable.innerHTML = "";
+
+  data.forEach(s=>{
+    santriTable.innerHTML += `
+      <tr>
+        <td><img src="${s.foto}" width="36" style="border-radius:50%"></td>
+        <td>${s.nama}</td>
+        <td>${s.nik}</td>
+        <td>${s.gender}</td>
+        <td>${s.umur}</td>
+        <td class="action-btn">
+          <button onclick="detailSantri('${s.id}')">Detail</button>
+          <button class="secondary" onclick="editSantri('${s.id}')">Edit</button>
+          <button class="danger" onclick="hapusSantri('${s.id}')">Hapus</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+document.getElementById("search").addEventListener("input", e => {
+  const key = e.target.value.toLowerCase();
+
+  renderAsatidz(
+    dataAsatidz.filter(a =>
+      a.nama.toLowerCase().includes(key) ||
+      a.nik.toLowerCase().includes(key)
+    )
+  );
+});
+
+
+// READ SANTRI
+window.loadSantri = async function(){
+  dataSantri=[];
+  santriTable.innerHTML="";
+
+  const q = query(collection(db,"santri"), orderBy("nama"));
+  const snap = await getDocs(q);
+
+  snap.forEach(d=>{
+    dataSantri.push({id:d.id,...d.data()});
+  });
+
+  renderSantri(dataSantri);
+}
+
+// SEARCH SANTRI
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("searchSantri");
+  if (!searchInput) return;
+
+  searchInput.addEventListener("input", e => {
+    const key = e.target.value.toLowerCase();
+
+    const filtered = dataSantri.filter(s =>
+      s.nama.toLowerCase().includes(key) ||
+      s.nik.toLowerCase().includes(key)
+    );
+
+    renderSantri(filtered);
+  });
+});
+
+window.sortSantriAZ = () => {
+  const sorted = [...dataSantri].sort((a,b)=>
+    a.nama.localeCompare(b.nama)
+  );
+  renderSantri(sorted);
+};
+
+
+// SEARCH ASATIDZ
+document.addEventListener("DOMContentLoaded", () => {
+
+const searchInput = document.getElementById("search");
+if (!searchInput) return; // ⛑️ anti crash
+
+searchInput.addEventListener("input", e => {
+  const key = e.target.value.toLowerCase();
+
+  renderAsatidz(
+    dataAsatidz.filter(a =>
+      a.nama.toLowerCase().includes(key) ||
+      a.nik.toLowerCase().includes(key)
+    )
+  );
+});
+
+});
+
+// DELETE SANTRI
+window.hapusSantri = async id =>{
+  if(confirm("Hapus data santri?")){
+    await deleteDoc(doc(db,"santri",id));
+    loadSantri();
+  }
+};
+
+
+//DETAIL SANTRI
+window.detailSantri = id => {
+ 
+  const s = dataSantri.find(x => x.id === id);
+  if (!s) return;
+
+  modalTitle.innerText = "Detail Santri";
+  modalBody.innerHTML = `
+    <img src="${s.foto}" width="100" style="border-radius:50%">
+    <p><b>Nama:</b> ${s.nama}</p>
+    <p><b>NIK:</b> ${s.nik}</p>
+    <p><b>JK:</b> ${s.gender}</p>
+    <p><b>Umur:</b> ${s.umur}</p>
+    <p><b>Ayah:</b> ${s.ayah}</p>
+    <p><b>Ibu:</b> ${s.ibu}</p>
+    <p><b>Alamat:</b> ${s.alamat}</p>
+  `;
+
+  modal.style.display = "block";
+};
+
+window.editSantri = id => {
+  const s = dataSantri.find(x => x.id === id);
+  if(!s) return;
+
+  modalTitle.innerText = "Edit Santri";
+  modalBody.innerHTML = `
+    <input id="eSNama" value="${s.nama}">
+    <input id="eSUmur" type="number" value="${s.umur}">
+    <input id="eSHp" value="${s.hp}">
+    <textarea id="eSAlamat">${s.alamat}</textarea>
+    <button onclick="simpanEditSantri('${id}')">Simpan</button>
+  `;
+  modal.style.display = "block";
+};
+
+
+//SIMPAN EDIT SANTRI
+window.simpanEditSantri = async id => {
+  await updateDoc(doc(db,"santri",id),{
+    nama: eSNama.value,
+    umur: eSUmur.value,
+    hp: eSHp.value,
+    alamat: eSAlamat.value
+  });
+
+  closeModal();
+  loadSantri();
+};
+
+
+  // DETAIL ASATIDZ
+  window.detail = async id => {
+    const snap = await getDocs(collection(db,"asatidz"));
+    snap.forEach(d=>{
+      if(d.id===id){
+        const x=d.data();
+        modalTitle.innerText="Detail Asatidz";
+        modalBody.innerHTML=`
+          <img src="${x.foto}" width="100" style="border-radius:50%">
+          <p><b>Nama:</b> ${x.nama}</p>
+          <p><b>NIK:</b> ${x.nik}</p>
+          <p><b>Pendidikan:</b> ${x.pendidikan}</p>
+          <p><b>Alamat:</b> ${x.alamat}</p>`;
+        modal.style.display="block";
+      }
+    });
+  };
+  
+  // EDIT
+  window.edit = async id => {
+    modalTitle.innerText="Edit Asatidz";
+    modalBody.innerHTML=`
+      <input id="eNama" placeholder="Nama">
+      <input id="ePendidikan" placeholder="Pendidikan">
+      <button onclick="simpanEdit('${id}')">Simpan</button>`;
+    modal.style.display="block";
+  };
+  
+  window.simpanEdit = async id => {
+    await updateDoc(doc(db,"asatidz",id),{
+      nama:eNama.value,
+      pendidikan:ePendidikan.value
+    });
+    closeModal(); load();
+  };
+  
+  window.hapus = async id =>{
+    if(confirm("Hapus data?")){
+      await deleteDoc(doc(db,"asatidz",id));
+      load();
+    }
+  };
+  
+  window.closeModal = ()=> modal.style.display="none";
+  window.addEventListener("DOMContentLoaded", () => {
+  showPage("asatidz"); // hanya saat awal load
+});
+
 </script>
+
+<script>
+    function toggleMenu() {
+      document.getElementById("menu").classList.toggle("active");
+    }
+</script>
+
+<script>
+  function showPage(page) {
+    document.querySelectorAll(".page").forEach(p => {
+      p.style.display = "none";
+    });
+
+    const target = document.getElementById(page + "-section");
+    if (target) target.style.display = "block";
+
+    if (page === "asatidz") load();
+    if (page === "santri") loadSantri();
+
+    document.getElementById("menu").classList.remove("active");
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    showPage("asatidz"); // 🔥 INI KUNCI
+  });
+  </script>
 
 </body>
 </html>
