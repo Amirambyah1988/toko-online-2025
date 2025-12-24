@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Asatidz</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script defer src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f1f5f9;
+    }
+
+    .page{
+  display:none;
+}
+
+
+    header {
+      background: #0b5ed7;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hamburger {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 250px;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: -5px 0 20px rgba(0,0,0,.2);
+  padding: 20px;
+  transform: translateX(100%); /* 🔴 SEMBUNYI TOTAL */
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.menu.active {
+  transform: translateX(0); /* 🔥 MUNCUL */
+}
+
+    .menu a {
+      display: block;
+      margin-bottom: 15px;
+      text-decoration: none;
+      color: #0b5ed7;
+      font-weight: 500;
+    }
+
+    #overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.3);
+  display: none;
+  z-index: 998;
+}
+
+.menu.active ~ #overlay {
+  display: block;
+}
+
+    main {
+      padding: 20px;
+    }
+
+    .card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  margin-bottom: 20px;
+}
+
+input, textarea, button {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  font-family: inherit;
+  margin-bottom: 12px;
+}
+
+button {
+  background: #0b5ed7;
+  color: white;
+  border: none;
+  font-weight: 500;
+}
+
+button.secondary {
+  background: #64748b;
+}
+
+button.danger {
+  background: #dc2626;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+th {
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+.action-btn {
+  display: flex;
+  gap: 6px;
+}
+
+.action-btn button {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: #fff;
+  width: 90%;
+  max-width: 400px;
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,.3);
+}
+
+.modal-content video {
+  width: 100%;
+  border-radius: 12px;
+  margin: 10px 0;
+}
+
+.modal-action {
+  display: flex;
+  gap: 10px;
+}
+
+  </style>
+</head>
+<body>
+
+<header>
+  <h3>Dashboard Asatidz</h3>
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+</header>
+
+<div class="menu" id="menu">
+  <a href="dashboard-asatidz.html" onclick="showPage('asatidz')">Tambah Asatidz</a>
+  <a href="dashboard-santri.html" onclick="showPage('santri')">Tambah Santri</a>
+  <a href="#" onclick="showPage('absensi')">Absensi</a>
+  <a href="#">Nilai & Hafalan</a>
+  <a href="#">Bisyaroh</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div id="overlay" onclick="toggleMenu()"></div>
+
+<main>
+    
+
+    <section id="asatidz-section" class="page"></section>
+    <section id="santri-section" class="page"></section>
+    <section id="absensi-section" class="page">
+
+        <div class="card">
+          <h4>Registrasi Wajah Santri</h4>
+          <button onclick="openModal()">Daftarkan Wajah</button>
+        </div>
+      
+        <div class="card">
+          <h4>Absensi Wajah</h4>
+          <video id="videoAbsen" autoplay></video>
+          <button onclick="absen()">Absen</button>
+        </div>
+      
+        <div class="card">
+          <h4>Data Absensi</h4>
+      
+          <input type="date" id="filterTanggal">
+          <button onclick="exportCSVAbsensi()">Export CSV</button>
+      
+          <table>
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Tanggal</th>
+                <th>Jam</th>
+              </tr>
+            </thead>
+            <tbody id="absensiTable"></tbody>
+          </table>
+        </div>
+      
+      </section>
+</main>
+
+<div id="modalFace" class="modal">
+    <div class="card">
+      <h4>Registrasi Wajah Santri</h4>
+  
+      <label>Pilih Santri</label>
+      <select id="pilihSantriModal"></select>
+        
+      <video id="video" autoplay></video>
+  
+      <div class="modal-action">
+        <button onclick="daftarWajah()">Simpan Wajah</button>
+        <button class="secondary" onclick="closeModal()">Batal</button>
+      </div>
+    </div>
+  </div>
+
+<!-- 🔥 SCRIPT FIREBASE -->
+<script type="module">
+    import { db } from "./firebase.js";
+    import {
+      collection,
+      addDoc,
+      getDocs,
+      query,
+      where
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    
+
+
+window.toggleMenu = function(){
+  document.getElementById("menu").classList.toggle("active");
+}
+
+window.showPage = function(page){
+  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+
+  const target = document.getElementById(page+"-section");
+  if(target) target.style.display="block";
+
+  if(page==="absensi") initAbsensi();
+
+  document.getElementById("menu").classList.remove("active");
+}
+
+
+//DEFAULT PAGE
+document.addEventListener("DOMContentLoaded",()=>{
+  showPage("absensi"); // 🔥 PASTI MUNCUL
+});
+
+
+
+//DROPDOWN
+async function loadSantriDropdown(){
+  const select = document.getElementById("pilihSantriModal");
+  select.innerHTML = `<option value="">Loading...</option>`;
+
+  const snap = await getDocs(collection(db,"santri"));
+
+  select.innerHTML = `<option value="">-- Pilih Santri --</option>`;
+
+  if(snap.empty){
+    select.innerHTML += `<option disabled>Tidak ada santri</option>`;
+    return;
+  }
+
+  snap.forEach(doc=>{
+    const s = doc.data();
+    select.innerHTML += `
+      <option value="${doc.id}">${s.nama}</option>
+    `;
+  });
+}
+
+//FACE API
+async function loadModels(){
+  const url="https://cdn.jsdelivr.net/npm/face-api.js/models";
+  await faceapi.nets.tinyFaceDetector.loadFromUri(url);
+  await faceapi.nets.faceLandmark68Net.loadFromUri(url);
+  await faceapi.nets.faceRecognitionNet.loadFromUri(url);
+  console.log("FaceAPI siap");
+}
+loadModels();
+
+
+//MODAL
+let stream=null;
+
+window.openModal = async function(){
+  document.getElementById("modalFace").classList.add("active");
+
+  await loadSantriDropdown(); // 🔥 WAJIB
+  stream = await navigator.mediaDevices.getUserMedia({ video:true });
+  document.getElementById("video").srcObject = stream;
+}
+
+window.closeModal = function(){
+  document.getElementById("modalFace").classList.remove("active");
+  if(stream){
+    stream.getTracks().forEach(t=>t.stop());
+    stream=null;
+  }
+}
+
+/* ================= DAFTAR WAJAH ================= */
+window.daftarWajah = async function(){
+  const video=document.getElementById("video");
+  const santriId = document.getElementById("pilihSantriModal").value;
+
+  if(!santriId){
+    alert("Pilih santri");
+    return;
+  }
+
+  const detection = await faceapi
+    .detectSingleFace(video,new faceapi.TinyFaceDetectorOptions())
+    .withFaceLandmarks()
+    .withFaceDescriptor();
+
+  if(!detection){
+    alert("Wajah tidak terdeteksi");
+    return;
+  }
+
+  await addDoc(collection(db,"faceData"),{
+    santriId,
+    descriptor:Array.from(detection.descriptor),
+    createdAt:new Date()
+  });
+
+  alert("Wajah tersimpan");
+  closeModal();
+}
+
+/* ================= ABSENSI ================= */
+window.absen = async function(){
+  const video=document.getElementById("videoAbsen");
+
+  const detection = await faceapi
+    .detectSingleFace(video,new faceapi.TinyFaceDetectorOptions())
+    .withFaceLandmarks()
+    .withFaceDescriptor();
+
+  if(!detection){
+    alert("Wajah tidak dikenali");
+    return;
+  }
+
+  const snap = await getDocs(collection(db,"faceData"));
+  let cocok=null;
+
+  snap.forEach(d=>{
+    const dist = faceapi.euclideanDistance(
+      detection.descriptor,
+      new Float32Array(d.data().descriptor)
+    );
+    if(dist<0.5) cocok=d.data();
+  });
+
+  if(!cocok){
+    alert("Wajah belum terdaftar");
+    return;
+  }
+
+  await addDoc(collection(db,"absensi"),{
+    santriId:cocok.santriId,
+    tanggal:new Date().toISOString().slice(0,10),
+    jam:new Date().toLocaleTimeString("id-ID")
+  });
+
+  alert("Absen berhasil");
+}
+
+
+/* ================= INIT ================= */
+function initAbsensi(){
+  console.log("Halaman absensi tampil");
+}
+
+
+
+async function startCamera(){
+  stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  document.getElementById("modalVideo").srcObject = stream;
+}
+
+function stopCamera(){
+  if(stream){
+    stream.getTracks().forEach(t => t.stop());
+    stream = null;
+  }
+}
+
+
+//LOAD ABSENSI PERTANGGAL
+async function loadAbsensi(tgl){
+  absensiTable.innerHTML = "";
+
+  const q = query(
+    collection(db,"absensi"),
+    where("tanggal","==",tgl)
+  );
+
+  const snap = await getDocs(q);
+
+  snap.forEach(d=>{
+    const x = d.data();
+    absensiTable.innerHTML += `
+      <tr>
+        <td>${x.nama}</td>
+        <td>${x.tanggal}</td>
+        <td>${x.jam}</td>
+      </tr>
+    `;
+  });
+}
+
+
+//Eksport CSV
+function exportCSVAbsensi(){
+  let csv = "Nama,Tanggal,Jam\n";
+  dataAbsensi.forEach(a=>{
+    csv += `${a.nama},${a.tanggal},${a.jam}\n`;
+  });
+
+  const blob = new Blob([csv],{type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "absensi.csv";
+  a.click();
+}
+</script>
+
+</body>
+</html>
