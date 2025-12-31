@@ -249,6 +249,10 @@ th {
     </div>
   </div>
 
+
+
+  
+
 <!-- 🔥 SCRIPT FIREBASE -->
 <script type="module">
     import { db } from "./firebase.js";
@@ -260,9 +264,11 @@ th {
       where
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     
+    let stream = null;
+  let labeledDescriptors = [];
+  let faceMatcher = null;
 
-
-window.toggleMenu = function(){
+  window.toggleMenu = function(){
   document.getElementById("menu").classList.toggle("active");
 }
 
@@ -309,24 +315,25 @@ async function loadSantriDropdown(){
 
 //FACE API
 async function loadModels(){
-  const url="https://cdn.jsdelivr.net/npm/face-api.js/models";
-  await faceapi.nets.tinyFaceDetector.loadFromUri(url);
-  await faceapi.nets.faceLandmark68Net.loadFromUri(url);
-  await faceapi.nets.faceRecognitionNet.loadFromUri(url);
-  console.log("FaceAPI siap");
+  const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
+
+  await Promise.all([
+    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+  ]);
+
+  console.log("✅ FaceAPI model siap");
 }
-loadModels();
+await loadModels();
 
 
 //MODAL
-let stream=null;
 
 window.openModal = async function(){
   document.getElementById("modalFace").classList.add("active");
-
-  await loadSantriDropdown(); // 🔥 WAJIB
-  stream = await navigator.mediaDevices.getUserMedia({ video:true });
-  document.getElementById("video").srcObject = stream;
+  await loadSantriDropdown();
+  await startCamera("video");
 }
 
 window.closeModal = function(){
@@ -339,89 +346,127 @@ window.closeModal = function(){
 
 /* ================= DAFTAR WAJAH ================= */
 window.daftarWajah = async function(){
-  const video=document.getElementById("video");
-  const santriId = document.getElementById("pilihSantriModal").value;
+  try{
+    const santriId = pilihSantriModal.value;
+    if(!santriId) return alert("Pilih santri");
 
-  if(!santriId){
-    alert("Pilih santri");
-    return;
+    const video = document.getElementById("video");
+
+    const detection = await faceapi
+      .detectSingleFace(video,new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+    if(!detection) return alert("Wajah tidak terdeteksi");
+
+    await addDoc(collection(db,"faceData"),{
+      santriId,
+      descriptor: Array.from(detection.descriptor),
+      createdAt: new Date()
+    });
+
+    alert("✅ Wajah tersimpan");
+    closeModal();
+    stopCamera();
+
+  }catch(err){
+    console.error(err);
+    alert("❌ Gagal simpan wajah");
   }
+}
 
-  const detection = await faceapi
-    .detectSingleFace(video,new faceapi.TinyFaceDetectorOptions())
-    .withFaceLandmarks()
-    .withFaceDescriptor();
 
-  if(!detection){
-    alert("Wajah tidak terdeteksi");
-    return;
-  }
+/* ================= LOAD DATA WAJAH ================= */
+async function loadFaceData(){
+  const faceSnap = await getDocs(collection(db,"faceData"));
+  const santriSnap = await getDocs(collection(db,"santri"));
 
-  await addDoc(collection(db,"faceData"),{
-    santriId,
-    descriptor:Array.from(detection.descriptor),
-    createdAt:new Date()
+  const santriMap = {};
+  santriSnap.forEach(d=>{
+    santriMap[d.id] = d.data().nama;
   });
 
-  alert("Wajah tersimpan");
-  closeModal();
+  labeledDescriptors = [];
+
+  faceSnap.forEach(d=>{
+    const data = d.data();
+    const nama = santriMap[data.santriId];
+
+    if(!nama) return; // 🔥 skip aman
+
+    labeledDescriptors.push(
+      new faceapi.LabeledFaceDescriptors(
+        nama,
+        [new Float32Array(data.descriptor)]
+      )
+    );
+  });
+
+  // 🔥 PENTING: cek dulu
+  if(labeledDescriptors.length === 0){
+    alert("⚠️ Belum ada wajah terdaftar");
+    return;
+  }
+
+  faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.5);
 }
+
 
 /* ================= ABSENSI ================= */
 window.absen = async function(){
-  const video=document.getElementById("videoAbsen");
+  try{
+    const video = document.getElementById("videoAbsen");
 
-  const detection = await faceapi
-    .detectSingleFace(video,new faceapi.TinyFaceDetectorOptions())
-    .withFaceLandmarks()
-    .withFaceDescriptor();
+    const detection = await faceapi
+      .detectSingleFace(video,new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks()
+      .withFaceDescriptor();
 
-  if(!detection){
-    alert("Wajah tidak dikenali");
-    return;
+    if(!detection) return alert("Wajah tidak terdeteksi");
+
+    const result = faceMatcher.findBestMatch(detection.descriptor);
+
+    if(result.label === "unknown")
+      return alert("Wajah belum terdaftar");
+
+    const now = new Date();
+
+    await addDoc(collection(db,"absensi"),{
+      nama: result.label,
+      tanggal: now.toISOString().slice(0,10),
+      jam: now.toLocaleTimeString("id-ID")
+    });
+
+    alert(`✅ Absen berhasil: ${result.label}`);
+
+  }catch(err){
+    console.error(err);
+    alert("❌ Gagal absen");
   }
-
-  const snap = await getDocs(collection(db,"faceData"));
-  let cocok=null;
-
-  snap.forEach(d=>{
-    const dist = faceapi.euclideanDistance(
-      detection.descriptor,
-      new Float32Array(d.data().descriptor)
-    );
-    if(dist<0.5) cocok=d.data();
-  });
-
-  if(!cocok){
-    alert("Wajah belum terdaftar");
-    return;
-  }
-
-  await addDoc(collection(db,"absensi"),{
-    santriId:cocok.santriId,
-    tanggal:new Date().toISOString().slice(0,10),
-    jam:new Date().toLocaleTimeString("id-ID")
-  });
-
-  alert("Absen berhasil");
 }
 
 
 /* ================= INIT ================= */
-function initAbsensi(){
-  console.log("Halaman absensi tampil");
+async function initAbsensi(){
+  await startCamera("videoAbsen");
+  await loadFaceData();
 }
 
 
 
-async function startCamera(){
-  stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  document.getElementById("modalVideo").srcObject = stream;
+async function startCamera(videoId){
+  const video = document.getElementById(videoId);
+  stream = await navigator.mediaDevices.getUserMedia({ video:true });
+  video.srcObject = stream;
+
+  await new Promise(resolve=>{
+    video.onloadedmetadata = () => resolve();
+  });
 }
 
 function stopCamera(){
   if(stream){
-    stream.getTracks().forEach(t => t.stop());
+    stream.getTracks().forEach(t=>t.stop());
     stream = null;
   }
 }
